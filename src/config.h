@@ -88,9 +88,9 @@
 #define DEFAULT_TEMPERATURE 2000
 
 // Some default Values
-#define BOOT_DD 1  //!< Boot-Up date: day
-#define BOOT_MM 1  //!< Boot-Up date: month
-#define BOOT_YY 17 //!< Boot-Up date: year
+#define BOOT_DD 25  //!< Boot-Up date: day
+#define BOOT_MM 9  //!< Boot-Up date: month
+#define BOOT_YY 22 //!< Boot-Up date: year
 #define BOOT_hh 12 //!< Boot-Up time: hour
 #define BOOT_mm 00 //!< Boot-Up time: minutes
 
