@@ -1,5 +1,7 @@
 # OpenHR20
 
+![Development Status](https://img.shields.io/badge/development%20status-WIP-orange) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/shawly/openhr20/CI%20Build?logo=github) ![GitHub](https://img.shields.io/github/license/shawly/openhr20)
+
 This is a fork of [OpenHR20](https://github.com/OpenHR20/OpenHR20) with RFM and Thermotronic support completely removed.
 
 The goal of this fork is to provide a clean firmware with UART support for controlling the HR20 thermostats through external devices. Therefore RFM is obsolete and Thermotronic doesn't support UART, so support for both has been removed.
