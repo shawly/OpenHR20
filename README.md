@@ -6,6 +6,22 @@ This is a fork of [OpenHR20](https://github.com/OpenHR20/OpenHR20) with RFM and 
 
 The goal of this fork is to provide a clean firmware with UART support for controlling the HR20 thermostats through external devices. Therefore RFM is obsolete and Thermotronic doesn't support UART, so support for both has been removed.
 
+**Why remove RFM support?**
+
+I am mainly interested in controlling my HR20's through an ESP8266 directly through the pin headers via UART. Since it will be powered through a DC adapter anyway, the increased power consumption doesn't matter as I won't be using batteries anyway.
+
+## Features
+
+- All original HR20/HR25 features
+- UART control through pin header
+- ~~Wireless control through RFM radio module~~ (removed)
+
+### Planned
+
+- Migrate build to [PlatformIO](https://platformio.org/) with [MegaCore](https://registry.platformio.org/tools/platformio/framework-arduino-avr-megacore) (as soon as [ATmega169 support](https://github.com/platformio/platform-atmelavr/pull/287) has been merged)
+- Guide for flashing
+- ESPHome module for integration with Home Assistant
+
 ## Compiling
 
 As installing this firmware needs flashing a program to the thermostat MCU with hardware programmer, at least basic understanding of working with AVR MCUs and some additional hardware is required.
@@ -40,7 +56,9 @@ _.bin _.hex - flash on BIN and HEX format
 
 \*.txt - info about compilation
 
-## PINOUT HR20
+## Flashing
+
+### PINOUT HR20
 
 The externally accesible connector on HR20/25 thermostats allows direct connection to the MCU for flashing via JTAG, or for wired communication. The connector layout is:
 
@@ -48,3 +66,7 @@ The externally accesible connector on HR20/25 thermostats allows direct connecti
 | ----------- | ------------------------ | ----------- | ----------- | ------------ |
 | Vcc         | RXD(PE0/02)              | TDO(PF6/55) | TMS(PF5/56) | /RST(PG5/20) |
 | GND         | TDI(PF7/54)              | TXD(PE1/03) | TCK(PF4/57) | (PE2/04)     |
+
+### How to flash?
+
+TBD
