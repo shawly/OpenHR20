@@ -19,8 +19,9 @@
  *              MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *              GNU General Public License for more details.
  *
- *              You should have received a copy of the GNU General Public License
- *              along with this program. If not, see http:*www.gnu.org/licenses
+ *              You should have received a copy of the GNU General Public
+ *              License along with this program. If not, see
+ *              http:*www.gnu.org/licenses
  */
 
 /*!
@@ -38,7 +39,8 @@
 #if defined(_AVR_IOM169P_H_) || defined(_AVR_IOM329_H_)
 #define UART_need_clock() (UCSR0B & (_BV(TXEN0) | _BV(RXEN0)))
 #define UART_enable_rx() (UCSR0B |= _BV(RXEN0) | _BV(RXCIE0))
-#elif defined(_AVR_IOM169_H_) || defined(_AVR_IOM16_H_) || defined(_AVR_IOM32_H_)
+#elif defined(_AVR_IOM169_H_) || defined(_AVR_IOM16_H_) ||                     \
+    defined(_AVR_IOM32_H_)
 #define UART_need_clock() (UCSRB & (_BV(TXEN) | _BV(RXEN)))
 #define UART_enable_rx() (UCSRB |= _BV(RXEN) | _BV(RXCIE))
 #endif

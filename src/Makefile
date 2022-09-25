@@ -46,19 +46,14 @@
 #           command line parameters for "avr-size" on Linux and Windows.
 
 # set a default - can be overriden on the command line with:
-#   make HW=THERMOTRONIC <...>
-# HW = THERMOTRONIC
+#   make HW=HR25 <...>
 HW = HONEYWELL
 # HW = HR25
 
 # set up the TARGET and MCU based on HW
 # TARGET = Target file name (without extension).
 # MCU = MCU name
-ifeq ($(HW),THERMOTRONIC)
-	MCU = atmega169
-	F_CPU = 1000000
-	TARGET = thermotronic
-else ifeq ($(HW),HONEYWELL)
+ifeq ($(HW),HONEYWELL)
 	MCU = atmega169p
 	F_CPU = 4000000
 	TARGET = hr20
@@ -97,11 +92,8 @@ SRC_B_DIR=../common
 
 SRC_B =  \
     rtc.c \
-    cmac.c \
     eeprom.c \
-    rfm.c \
-    uart.c \
-    wireless.c
+    uart.c
 
 
 
@@ -112,7 +104,7 @@ SRC_B =  \
 #     Even though the DOS/Win* filesystem matches both .s and .S the same,
 #     it will preserve the spelling of the filenames, and gcc itself does
 #     care about how the name is spelled on its command-line.
-ASRC = xtea-asm.S
+ASRC = 
 
 
 # Optimization level, can be [0, 1, 2, 3, s].
@@ -148,41 +140,10 @@ CDEFS = -DF_CPU=$(F_CPU)UL
 
 
 # Place -D or -U options here for ASM sources
-ADEFS = -DF_CPU=$(F_CPU) -DXTEA_ENC
-# We need only encryption
-# ADEFS+=-DXTEA_DEC
+ADEFS = -DF_CPU=$(F_CPU)
 
-
-# Default options values, no manual flag overidden because of incompatibilites
-# Incompatibilities handled below with $(error ...)
-# Define RFM to 0 to disable support for the RFM Radio Moodule in the Code
-ifeq ($(HW),THERMOTRONIC)
- RFM?=0
-else
- RFM?=1
-endif
-# Set default baud rate for RFM
-RFM_BAUD_RATE?=19200
-# Set default HR slave address, valid range is 1-28
-RFM_DEVICE_ADDRESS?=28
-# Set default security keys
-SECURITY_KEY_0?=0x01
-SECURITY_KEY_1?=0x23
-SECURITY_KEY_2?=0x45
-SECURITY_KEY_3?=0x67
-SECURITY_KEY_4?=0x89
-SECURITY_KEY_5?=0xab
-SECURITY_KEY_6?=0xcd
-SECURITY_KEY_7?=0xef
-# Main RFM frequency (depends on RFM variant)
-RFM_FREQ_MAIN?=868
-# Decimal part of the RFM frequency
-RFM_FREQ_FINE?=0.35
-# Enable diagnostic (RFM_TUNING=1) to fine tune RFM frequency
-RFM_TUNING?=1
 # Various options
 TEMP_COMPENSATE_OPTION?=0
-REMOTE_SETTING_ONLY?=$(RFM)
 HW_WINDOW_DETECTION?=0
 MENU_SHOW_BATTERY?=1
 MOTOR_COMPENSATE_BATTERY?=0
@@ -190,50 +151,8 @@ NO_AUTORETURN_FROM_ALT_MENUES?=0
 CALIBRATION_RESETS_sumError?=0
 BLOCK_INTEGRATOR_AFTER_VALVE_CHANGE?=0
 BOOST_CONTROLER_AFTER_CHANGE?=0
-ifeq ($(RFM),1)
- RFM_WIRE?=JD_INTERNAL
-endif
-ifeq ($(RFM_WIRE),MARIOJTAG)
- DISABLE_JTAG?=1
-endif
-ifeq ($(RFM_WIRE),TK_INTERNAL)
- DISABLE_JTAG?=1
-endif
 # Define to 1 to disable JTAG
 DISABLE_JTAG?=0
-
-# Check options and issue an error if consistent (rather than silently forcing compatible options)
-ifeq ($(RFM),1)
- ifeq ($(HW),THERMOTRONIC)
-  $(error ERROR: THERMOTRONIC with RFM12 not implemented.)
- endif
- ifneq ($(RFM_WIRE),JD_INTERNAL)
-  ifeq ($(RFM_WIRE),TK_INTERNAL)
-   ifneq ($(HW),HR25)
-    $(error ERROR: RFM_WIRE_TK_INTERNAL applicable for HR25 hardware only.)
-   endif
-  else
-   ifeq ($(RFM_WIRE),MARIOJTAG)
-    ifeq ($(HW_WINDOW_DETECTION),1)
-     $(error ERROR: HW_WINDOW_DETECTION incompatible with MARIOJTAG wiring.)
-    endif
-   else
-    $(error ERROR: Unknown wiring option.)
-   endif
-  endif
-  ifeq ($(DISABLE_JTAG),0)
-   $(error ERROR: JTAG must be disabled to use MARIOJTAG or TK_INTERNAL wiring.)
-  endif
- endif
-else
- ifneq ($(RFM_WIRE),)
-  $(error ERROR: Enable RFM to use RFM_WIRE_... options.)
- endif
- ifeq ($(REMOTE_SETTING_ONLY),1)
-  $(error ERROR: Enable RFM to use REMOTE_SETTING_ONLY.)
- endif
-endif
-
 
 #---------------- Compiler Options C ----------------
 #  -g*:          generate debugging information
@@ -245,42 +164,14 @@ endif
 CFLAGS = -g$(DEBUG)
 CFLAGS += $(CDEFS)
 CFLAGS += $(REV)
-CFLAGS += -DRFM=$(RFM)
-ifeq ($(RFM),1)
-CFLAGS += -DRFM_BAUD_RATE=$(RFM_BAUD_RATE)
-CFLAGS += -DRFM_DEVICE_ADDRESS=$(RFM_DEVICE_ADDRESS)
-CFLAGS += -DSECURITY_KEY_0=$(SECURITY_KEY_0)
-CFLAGS += -DSECURITY_KEY_1=$(SECURITY_KEY_1)
-CFLAGS += -DSECURITY_KEY_2=$(SECURITY_KEY_2)
-CFLAGS += -DSECURITY_KEY_3=$(SECURITY_KEY_3)
-CFLAGS += -DSECURITY_KEY_4=$(SECURITY_KEY_4)
-CFLAGS += -DSECURITY_KEY_5=$(SECURITY_KEY_5)
-CFLAGS += -DSECURITY_KEY_6=$(SECURITY_KEY_6)
-CFLAGS += -DSECURITY_KEY_7=$(SECURITY_KEY_7)
-CFLAGS += -DRFM_FREQ_MAIN=$(RFM_FREQ_MAIN)
-CFLAGS += -DRFM_FREQ_FINE=$(RFM_FREQ_FINE)
-CFLAGS += -DRFM_TUNING=$(RFM_TUNING)
-endif
 CFLAGS += -DTEMP_COMPENSATE_OPTION=$(TEMP_COMPENSATE_OPTION)
 CFLAGS += -DHW_WINDOW_DETECTION=$(HW_WINDOW_DETECTION)
 CFLAGS += -DMENU_SHOW_BATTERY=$(MENU_SHOW_BATTERY)
 CFLAGS += -DMOTOR_COMPENSATE_BATTERY=$(MOTOR_COMPENSATE_BATTERY)
 CFLAGS += -DNO_AUTORETURN_FROM_ALT_MENUES=$(NO_AUTORETURN_FROM_ALT_MENUES)
 CFLAGS += -DCALIBRATION_RESETS_sumError=$(CALIBRATION_RESETS_sumError)
-CFLAGS += -DREMOTE_SETTING_ONLY=$(REMOTE_SETTING_ONLY)
 CFLAGS += -DBLOCK_INTEGRATOR_AFTER_VALVE_CHANGE=$(BLOCK_INTEGRATOR_AFTER_VALVE_CHANGE)
 CFLAGS += -DBOOST_CONTROLER_AFTER_CHANGE=$(BOOST_CONTROLER_AFTER_CHANGE)
-ifeq ($(RFM_WIRE),MARIOJTAG)
- CFLAGS += -DRFM_WIRE_MARIOJTAG=1
-else
- ifeq ($(RFM_WIRE),TK_INTERNAL)
-  CFLAGS += -DRFM_WIRE_TK_INTERNAL=1
- else
-  ifeq ($(RFM_WIRE),JD_INTERNAL)
-   CFLAGS += -DRFM_WIRE_JD_INTERNAL=1
-  endif
- endif
-endif
 CFLAGS += -DDISABLE_JTAG=$(DISABLE_JTAG)
 CFLAGS += $(FLAGS)
 CFLAGS += -O$(OPT)
@@ -307,9 +198,6 @@ CFLAGS += -Wl,--relax
 CFLAGS += -fdata-sections
 CFLAGS += -fno-toplevel-reorder
 
-ifeq ($(HW),THERMOTRONIC)
-    CFLAGS += -DTHERMOTRONIC=1
-endif
 ifeq ($(HW),HR25)
     CFLAGS += -DHR25=1
 endif
@@ -633,14 +521,7 @@ extcoff: $(TARGET).elf
 	$(REMOVE) $@
 	@echo "Configuration" >> $@
 	@echo "Hardware type $(HW)" >> $@
-	@echo "RFM=$(RFM)" >> $@
-	@echo "RFM_DEVICE_ADDRESS=$(RFM_DEVICE_ADDRESS)" >> $@
-	@echo "SECURITY_KEY=$(SECURITY_KEY_0) $(SECURITY_KEY_1) $(SECURITY_KEY_2) $(SECURITY_KEY_3) $(SECURITY_KEY_4) $(SECURITY_KEY_5) $(SECURITY_KEY_6) $(SECURITY_KEY_7)" >> $@
-	@echo "RFM_FREQ_MAIN=$(RFM_FREQ_MAIN)" >> $@
-	@echo "RFM_FREQ_FINE=$(RFM_FREQ_FINE)" >> $@
-	@echo "RFM_TUNING=$(RFM_TUNING)" >> $@
 	@echo "TEMP_COMPENSATE_OPTION=$(TEMP_COMPENSATE_OPTION)" >> $@
-	@echo "REMOTE_SETTING_ONLY=$(REMOTE_SETTING_ONLY)" >> $@
 	@echo "HW_WINDOW_DETECTION=$(HW_WINDOW_DETECTION)" >> $@
 	@echo "MENU_SHOW_BATTERY=$(MENU_SHOW_BATTERY)" >> $@
 	@echo "MOTOR_COMPENSATE_BATTERY=$(MOTOR_COMPENSATE_BATTERY)" >> $@
@@ -648,7 +529,6 @@ extcoff: $(TARGET).elf
 	@echo "CALIBRATION_RESETS_sumError=$(CALIBRATION_RESETS_sumError)" >> $@
 	@echo "BLOCK_INTEGRATOR_AFTER_VALVE_CHANGE=$(BLOCK_INTEGRATOR_AFTER_VALVE_CHANGE)" >> $@
 	@echo "BOOST_CONTROLER_AFTER_CHANGE=$(BOOST_CONTROLER_AFTER_CHANGE)" >> $@
-	@echo "RFM_WIRE=$(RFM_WIRE)" >> $@
 	@echo "DISABLE_JTAG=$(DISABLE_JTAG)" >> $@
 	@echo "==================================" >> $@
 	@echo >> $@

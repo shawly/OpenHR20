@@ -19,8 +19,9 @@
  *              MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *              GNU General Public License for more details.
  *
- *              You should have received a copy of the GNU General Public License
- *              along with this program. If not, see http:*www.gnu.org/licenses
+ *              You should have received a copy of the GNU General Public
+ *              License along with this program. If not, see
+ *              http:*www.gnu.org/licenses
  */
 
 /*!
@@ -37,7 +38,6 @@
 #define DEBUG_MODE 0
 #define DEBUG_SKIP_DATETIME_SETTING_AFTER_RESET 0
 
-
 #define DEBUG_BEFORE_SLEEP()
 #define DEBUG_AFTER_SLEEP()
 
@@ -49,14 +49,8 @@
 #define DEBUG_PRINT_I_SUM 1
 #define DEBUG_PRINT_ADDITIONAL_TIMESTAMPS DEBUG_MODE
 #define DEBUG_IGNORE_MONT_CONTACT 0
-#define DEBUG_MOTOR_COUNTER  1
+#define DEBUG_MOTOR_COUNTER 1
 
 #define DEBUG_BATT_ADC 0
 
 #define DEBUG_PRINT_STR_16 (DEBUG_BATT_ADC)
-
-#if RFM
-#define DEBUG_DUMP_RFM DEBUG_MODE
-#else
-#define DEBUG_DUMP_RFM 0
-#endif

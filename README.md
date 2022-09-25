@@ -1,13 +1,10 @@
 # OpenHR20
 
-[![Build Status](https://travis-ci.org/OpenHR20/OpenHR20.svg?branch=master)](https://travis-ci.org/OpenHR20/OpenHR20)
-
 This repository contains open firmware for Honeywell Rondostat HR20 and similar, Atmega-MCU based radiator thermostats. It is not based on the original, proprietary firmware, but rather a complete rewrite. It was started around 2008 by Jiri Dobry and Dario Carluccio, but has been changed and extended by many people since.
 
 Currently supported thermostats are:
 * HR20
 * HR25
-* THERMOTRONIC
 
 Main improvements of this firmware are addition of wireless and/or wired communication with central hub.
 
@@ -20,13 +17,9 @@ As installing this firmware needs flashing a program to the thermostat MCU with 
 
 To compile the sources, avr compatible gcc crosscompiler is required. On many linux distributions, you can install this via packages, e.g. on debian based distros, installing "gcc-avr" package should install the whole required toolchain. For flashing, "avrdude" package is also required. For Windows, the [WinAVR](https://sourceforge.net/projects/winavr/) package should get you all the tools needed.
 
-To compile the default configuration - HR20 version with RFM12B radio:
+To compile the default configuration - HR20 version:
 
 `make`
-
-To compile the sources without wireless extension:
-
-`make RFM=0`
 
 To compile with predefined REVision ID
 
@@ -35,10 +28,6 @@ To compile with predefined REVision ID
 To compile with hardware window open contact
 
 `make HW_WINDOW_DETECTION=1`
-
-thermotronic HW
-
-`make HW=THERMOTRONIC`
 
 ## PINOUT HR20
 

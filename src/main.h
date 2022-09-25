@@ -19,8 +19,9 @@
  *              MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *              GNU General Public License for more details.
  *
- *              You should have received a copy of the GNU General Public License
- *              along with this program. If not, see http:*www.gnu.org/licenses
+ *              You should have received a copy of the GNU General Public
+ *              License along with this program. If not, see
+ *              http:*www.gnu.org/licenses
  */
 
 /*!
@@ -36,23 +37,23 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "config.h"     // General Setup configuration
+#include "config.h" // General Setup configuration
 
 //! HR20 runs on 4MHz
 #ifndef F_CPU
 #define F_CPU 4000000UL
 #endif
 
-#define nop() asm ("nop;")
+#define nop() asm("nop;")
 
 #define c2temp(c) (c * 2)
-#define calc_temp(t) (((uint16_t)t) * 50)       // result unit is 1/100 C
-#define TEMP_MIN    c2temp(5)                   // 5°C
-#define TEMP_DEFAULT    c2temp(20)              // 20°C
-#define TEMP_MAX    c2temp(30)                  // 30°C
+#define calc_temp(t) (((uint16_t)t) * 50) // result unit is 1/100 C
+#define TEMP_MIN c2temp(5)                // 5°C
+#define TEMP_DEFAULT c2temp(20)           // 20°C
+#define TEMP_MAX c2temp(30)               // 30°C
 
 // public prototypes
-void delay(uint16_t);                   // delay
+void delay(uint16_t); // delay
 
 extern bool reboot;
 
