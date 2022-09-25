@@ -13,16 +13,14 @@ export MOTOR_COMPENSATE_BATTERY=0
 
 #############
 
-default: HR20_original_sww
+default: HR20_uart_sww
 
-all: HR20_original_sww HR20_original_hww HR25_original_sww
-	 cp src/license.txt $(DEST)/
+all: HR20_uart_sww HR20_uart_hww HR25_uart_sww
 
 clean:
-	 $(MAKE) clean -C src TARGET=../$(DEST)/HR20_original_sww/hr20 OBJDIR=HR20_original_sww
-	 $(MAKE) clean -C src TARGET=../$(DEST)/HR20_original_hww/hr20 OBJDIR=HR20_original_hww
-	 $(MAKE) clean -C src TARGET=../$(DEST)/HR25_original_sww/hr20 OBJDIR=HR25_original_sww
-	@rm -f $(DEST)/license.txt
+	 $(MAKE) clean -C src TARGET=../$(DEST)/HR20_uart_sww/hr20 OBJDIR=HR20_uart_sww
+	 $(MAKE) clean -C src TARGET=../$(DEST)/HR20_uart_hww/hr20 OBJDIR=HR20_uart_hww
+	 $(MAKE) clean -C src TARGET=../$(DEST)/HR25_uart_sww/hr20 OBJDIR=HR25_uart_sww
 
 beauty:
 	 clang-format -i src/*.h src/*.c common/*.h common/*.c
@@ -34,7 +32,7 @@ VER=
 
 DEST=bin
 
-HR20_original_sww:
+HR20_uart_sww:
 	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \
@@ -42,7 +40,7 @@ HR20_original_sww:
 		HW_WINDOW_DETECTION=0 \
 		REV=-DREVISION=\\\"$(REV)\\\"
 
-HR20_original_hww:
+HR20_uart_hww:
 	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \
@@ -50,7 +48,7 @@ HR20_original_hww:
 		HW_WINDOW_DETECTION=1 \
 		REV=-DREVISION=\\\"$(REV)\\\"
 
-HR25_original_sww:
+HR25_uart_sww:
 	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \

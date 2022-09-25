@@ -47,13 +47,13 @@
 
 # set a default - can be overriden on the command line with:
 #   make HW=HR25 <...>
-HW = HONEYWELL
+HW = HR20
 # HW = HR25
 
 # set up the TARGET and MCU based on HW
 # TARGET = Target file name (without extension).
 # MCU = MCU name
-ifeq ($(HW),HONEYWELL)
+ifeq ($(HW),HR20)
 	MCU = atmega169p
 	F_CPU = 4000000
 	TARGET = hr20
