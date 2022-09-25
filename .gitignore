@@ -183,4 +183,3 @@ $RECYCLE.BIN/
 *.dep
 *.sym
 bin/*
-!bin/ReadMe.txt
