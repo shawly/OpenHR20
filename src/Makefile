@@ -63,7 +63,7 @@ else ifeq ($(HW),HR25)
 	TARGET = hr25
 endif
 
-# enable 16kHz cpu frequency when using external power supply
+# enable 16mHz cpu frequency when using external power supply
 # expermintal
 ifeq ($(EXTERNAL_POWER),1)
     F_CPU = 16000000
@@ -141,6 +141,10 @@ CDEFS = -DF_CPU=$(F_CPU)UL
 
 # Place -D or -U options here for ASM sources
 ADEFS = -DF_CPU=$(F_CPU)
+
+# This function converts an mcu-name (as used by gcc) to a part-name as expected
+# by avrdude
+MCU_TO_PART=$(patsubst atmega%,m%,$(patsubst atiny%,t%,$1))
 
 # Various options
 TEMP_COMPENSATE_OPTION?=0
@@ -309,7 +313,9 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) $(AVRDUDE_DELAY)
+AVRDUDE_PART = $(call MCU_TO_PART,$(MCU))
+
+AVRDUDE_FLAGS = -p $(AVRDUDE_PART) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) $(AVRDUDE_DELAY)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
@@ -441,7 +447,7 @@ end:
 # Display size of file.
 HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
 
-ELFSIZE = $(SIZE) --mcu=$(MCU) --format=avr $(TARGET).elf
+ELFSIZE = $(SIZE) $(TARGET).elf
 
 
 sizebefore:
