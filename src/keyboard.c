@@ -37,7 +37,7 @@
 #include <stdint.h>
 
 // HR20 Project includes
-#include "common/rtc.h"
+#include "rtc.h"
 #include "config.h"
 #include "controller.h"
 #include "debug.h"

@@ -63,6 +63,11 @@ else ifeq ($(HW),HR25)
 	TARGET = hr25
 endif
 
+# enable 16kHz cpu frequency when using external power supply
+# expermintal
+ifeq ($(EXTERNAL_POWER),1)
+    F_CPU = 16000000
+endif
 
 
 # Output format. (can be srec, ihex, binary)
@@ -86,15 +91,10 @@ SRC =  \
     keyboard.c \
     adc.c \
     menu.c \
-    lcd.c
-
-SRC_B_DIR=../common
-
-SRC_B =  \
+    lcd.c \
     rtc.c \
     eeprom.c \
     uart.c
-
 
 
 # List Assembler source files here.
@@ -386,10 +386,10 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) $(SRC_B:%.c=$(OBJDIR)/%.o)
+OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o)
 
 # Define all listing files.
-LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst) $(SRC_B:%.c=$(OBJDIR)/%.lst)
+LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst)
 
 
 # Compiler flags to generate dependency files.
@@ -589,11 +589,6 @@ $(OBJDIR)/%.o : %.c
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@
 
-$(OBJDIR)/%.o : $(SRC_B_DIR)/%.c
-	@echo
-	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(ALL_CFLAGS) $< -o $@
-
 
 # Compile: create assembler files from C source files.
 %.s : %.c
@@ -601,11 +596,6 @@ $(OBJDIR)/%.o : $(SRC_B_DIR)/%.c
 
 
 # Assemble: create object files from assembler source files.
-$(OBJDIR)/%.o : $(SRC_B_DIR)/%.S
-	@echo
-	@echo $(MSG_ASSEMBLING) $<
-	$(CC) -c $(ALL_ASFLAGS) $< -o $@
-
 $(OBJDIR)/%.o : %.S
 	@echo
 	@echo $(MSG_ASSEMBLING) $<
@@ -638,11 +628,6 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
-	$(REMOVE) $(SRC_B:%.c=$(OBJDIR)/%.o)
-	$(REMOVE) $(SRC_B:%.c=$(OBJDIR)/%.lst)
-	$(REMOVE) $(SRC_B:.c=.s)
-	$(REMOVE) $(SRC_B:.c=.d)
-	$(REMOVE) $(SRC_B:.c=.i)
 	$(REMOVEDIR) .dep
 
 

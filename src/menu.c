@@ -35,7 +35,7 @@
 #include <stdint.h>
 
 #include "adc.h"
-#include "common/rtc.h"
+#include "rtc.h"
 #include "config.h"
 #include "controller.h"
 #include "debug.h"

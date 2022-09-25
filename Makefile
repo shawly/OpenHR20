@@ -23,7 +23,7 @@ clean:
 	 $(MAKE) clean -C src TARGET=../$(DEST)/HR25_uart_sww/hr20 OBJDIR=HR25_uart_sww
 
 beauty:
-	 clang-format -i src/*.h src/*.c common/*.h common/*.c
+	 clang-format -i src/*.h src/*.c
 
 check:
 	 cppcheck --inline-suppr --force . >/dev/null
@@ -33,7 +33,7 @@ VER=
 DEST=bin
 
 HR20_uart_sww:
-	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
+	 $(shell mkdir -p $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \
 		OBJDIR=$@ \
@@ -41,7 +41,7 @@ HR20_uart_sww:
 		REV=-DREVISION=\\\"$(REV)\\\"
 
 HR20_uart_hww:
-	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
+	 $(shell mkdir -p $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \
 		OBJDIR=$@ \
@@ -49,7 +49,7 @@ HR20_uart_hww:
 		REV=-DREVISION=\\\"$(REV)\\\"
 
 HR25_uart_sww:
-	 $(shell mkdir $(DEST)/$@ 2>/dev/null)
+	 $(shell mkdir -p $(DEST)/$@ 2>/dev/null)
 	 $(MAKE) -C src \
 		TARGET=../$(DEST)/$@/hr20 \
 		OBJDIR=$@ \

@@ -35,7 +35,7 @@
 #pragma once
 
 #include "adc.h"
-#include "common/rtc.h"
+#include "rtc.h"
 #include "config.h"
 #include "debug.h"
 #include "main.h"

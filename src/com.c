@@ -39,8 +39,8 @@
 
 #include "adc.h"
 #include "com.h"
-#include "common/rtc.h"
-#include "common/uart.h"
+#include "rtc.h"
+#include "uart.h"
 #include "config.h"
 #include "controller.h"
 #include "debug.h"

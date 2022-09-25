@@ -43,7 +43,7 @@
 // HR20 Project includes
 #include "adc.h"
 #include "com.h"
-#include "common/rtc.h"
+#include "rtc.h"
 #include "debug.h"
 #include "eeprom.h"
 #include "main.h"

@@ -51,7 +51,7 @@
 #endif
 
 // HR20 Project includes
-#include "common/rtc.h"
+#include "rtc.h"
 #include "eeprom.h"
 #include "lcd.h"
 #include "main.h"
