@@ -24,9 +24,23 @@ I am mainly interested in controlling my HR20's through an ESP8266 directly thro
 
 ## Compiling
 
-As installing this firmware needs flashing a program to the thermostat MCU with hardware programmer, at least basic understanding of working with AVR MCUs and some additional hardware is required.
-
 To compile the sources, avr compatible gcc crosscompiler is required. On many linux distributions, you can install this via packages, e.g. on debian based distros, installing "gcc-avr" package should install the whole required toolchain. For flashing, "avrdude" package is also required.
+
+### Prerequisites
+
+#### Arch Linux based distributions
+
+```bash
+sudo pacman -Sy base-devel avr-gcc avr-binutils avr-libc cppcheck
+```
+
+#### Debian based distributions
+
+```bash
+sudo apt install build-essential gcc-avr binutils-avr avr-libc cppcheck
+```
+
+### Compile the firmware
 
 To compile the default configuration - HR20 version:
 
@@ -34,7 +48,7 @@ To compile the default configuration - HR20 version:
 
 To compile with predefined REVision ID
 
-`make REV=-DREVISION=\\\"123456_XYZ\\\"`
+`make REV=-DREVISION="123456_XYZ"`
 
 To compile with hardware window open contact
 
@@ -42,19 +56,19 @@ To compile with hardware window open contact
 
 ### OpenHR20 SW variants
 
-\*\_sww - software window detection
-
-\*\_hww - hardware window contact PE2<->GND (closed = connected, open=open)
+```
+*_sww - software window detection
+*_hww - hardware window contact PE2<->GND (closed = connected, open=open)
+```
 
 #### Binaries
 
-_.bin _.hex - flash on BIN and HEX format
-
-\_.eep - initial EEPROM content
-
-\_.elf - flash, eeprom and fuses combination
-
-\*.txt - info about compilation
+```
+*.bin *.hex - flash on BIN and HEX format
+*.eep - initial EEPROM content
+*.elf - flash, eeprom and fuses combination
+*.txt - info about compilation
+```
 
 ## Flashing
 
