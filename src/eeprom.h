@@ -35,99 +35,99 @@
 #pragma once
 
 #include "adc.h"
-#include "rtc.h"
 #include "config.h"
 #include "debug.h"
 #include "main.h"
+#include "rtc.h"
 #include <avr/eeprom.h>
 
 #define EEPROM __attribute__((section(".eeprom")))
 
 typedef struct // each variables must be uint8_t or int8_t without exception
 {
-  /* 00 */ uint8_t lcd_contrast;
-  /* 01 */ uint8_t
-      temperature0; //!< temperature 0  - frost protection (unit is 0.5stC)
-  /* 02 */ uint8_t
-      temperature1; //!< temperature 1  - energy save (unit is 0.5stC)
-  /* 03 */ uint8_t temperature2; //!< temperature 2  - comfort (unit is 0.5stC)
-  /* 04 */ uint8_t
-      temperature3; //!< temperature 3  - supercomfort (unit is 0.5stC)
-  /* 05 */ uint8_t P3_Factor;           //!< Proportional cubic tuning constant
-  /* 06 */ uint8_t P_Factor;            //!< Proportional tuning constant
-  /* 07 */ uint8_t I_Factor;            //!< Integral tuning constant
-  /* 08 */ uint8_t I_max_credit;        //!< credit for interator limitation
-  /* 09 */ uint8_t I_credit_expiration; //!< unit is PID_interval
-  /* 0a */ uint8_t PID_interval; //!< PID_interval*5 = interval in seconds
-  /* 0b */ uint8_t valve_min;    //!< valve position limiter min
-  /* 0c */ uint8_t
-      valve_center; //!< default valve position for "zero - error" - improve
-                    //!< stabilization after change temperature
-  /* 0d */ uint8_t valve_max; //!< valve position limiter max
-  /* 0e */ uint8_t
-      valve_hysteresis; //!< valve movement hysteresis (unit is 1/128%)
-  /* 0f */ uint8_t motor_pwm_min;  //!< min PWM for motor
-  /* 10 */ uint8_t motor_pwm_max;  //!< max PWM for motor
-  /* 11 */ uint8_t motor_eye_low;  //!< min signal lenght to accept low level
-                                   //!< (multiplied by 2)
-  /* 12 */ uint8_t motor_eye_high; //!< min signal lenght to accept high level
-                                   //!< (multiplied by 2)
-  /* 13 */ uint8_t motor_close_eye_timeout; //!< time from last pulse to disable
-                                            //!< eye [1/61sec]
-  /* 14 */ uint8_t
-      motor_end_detect_cal; //!< stop timer threshold in % to previous average
-  /* 15 */ uint8_t
-      motor_end_detect_run; //!< stop timer threshold in % to previous average
-  /* 16 */ uint8_t motor_speed; //!< /8
-  /* 17 */ uint8_t motor_speed_ctl_gain;
-  /* 18 */ uint8_t motor_pwm_max_step;
-  /* 19 */ uint8_t MOTOR_ManuCalibration_L;
-  /* 1a */ uint8_t MOTOR_ManuCalibration_H;
-  /* 1b */ uint8_t temp_cal_table0; //!< temperature calibration table
-  /* 1c */ uint8_t temp_cal_table1; //!< temperature calibration table
-  /* 1d */ uint8_t temp_cal_table2; //!< temperature calibration table
-  /* 1e */ uint8_t temp_cal_table3; //!< temperature calibration table
-  /* 1f */ uint8_t temp_cal_table4; //!< temperature calibration table
-  /* 20 */ uint8_t temp_cal_table5; //!< temperature calibration table
-  /* 21 */ uint8_t temp_cal_table6; //!< temperature calibration table
-  /* 22 */ uint8_t timer_mode; //!< bit0: timermode; =0 only one program, =1
-                               //!< programs for weekdays
-  //                                                                            >1 manual mode, the higher bits contain the saved temperature << 1
+    /* 00 */ uint8_t lcd_contrast;
+    /* 01 */ uint8_t
+        temperature0; //!< temperature 0  - frost protection (unit is 0.5stC)
+    /* 02 */ uint8_t
+        temperature1;              //!< temperature 1  - energy save (unit is 0.5stC)
+    /* 03 */ uint8_t temperature2; //!< temperature 2  - comfort (unit is 0.5stC)
+    /* 04 */ uint8_t
+        temperature3;                     //!< temperature 3  - supercomfort (unit is 0.5stC)
+    /* 05 */ uint8_t P3_Factor;           //!< Proportional cubic tuning constant
+    /* 06 */ uint8_t P_Factor;            //!< Proportional tuning constant
+    /* 07 */ uint8_t I_Factor;            //!< Integral tuning constant
+    /* 08 */ uint8_t I_max_credit;        //!< credit for interator limitation
+    /* 09 */ uint8_t I_credit_expiration; //!< unit is PID_interval
+    /* 0a */ uint8_t PID_interval;        //!< PID_interval*5 = interval in seconds
+    /* 0b */ uint8_t valve_min;           //!< valve position limiter min
+    /* 0c */ uint8_t
+        valve_center;           //!< default valve position for "zero - error" - improve
+                                //!< stabilization after change temperature
+    /* 0d */ uint8_t valve_max; //!< valve position limiter max
+    /* 0e */ uint8_t
+        valve_hysteresis;                     //!< valve movement hysteresis (unit is 1/128%)
+    /* 0f */ uint8_t motor_pwm_min;           //!< min PWM for motor
+    /* 10 */ uint8_t motor_pwm_max;           //!< max PWM for motor
+    /* 11 */ uint8_t motor_eye_low;           //!< min signal lenght to accept low level
+                                              //!< (multiplied by 2)
+    /* 12 */ uint8_t motor_eye_high;          //!< min signal lenght to accept high level
+                                              //!< (multiplied by 2)
+    /* 13 */ uint8_t motor_close_eye_timeout; //!< time from last pulse to disable
+                                              //!< eye [1/61sec]
+    /* 14 */ uint8_t
+        motor_end_detect_cal; //!< stop timer threshold in % to previous average
+    /* 15 */ uint8_t
+        motor_end_detect_run;     //!< stop timer threshold in % to previous average
+    /* 16 */ uint8_t motor_speed; //!< /8
+    /* 17 */ uint8_t motor_speed_ctl_gain;
+    /* 18 */ uint8_t motor_pwm_max_step;
+    /* 19 */ uint8_t MOTOR_ManuCalibration_L;
+    /* 1a */ uint8_t MOTOR_ManuCalibration_H;
+    /* 1b */ uint8_t temp_cal_table0; //!< temperature calibration table
+    /* 1c */ uint8_t temp_cal_table1; //!< temperature calibration table
+    /* 1d */ uint8_t temp_cal_table2; //!< temperature calibration table
+    /* 1e */ uint8_t temp_cal_table3; //!< temperature calibration table
+    /* 1f */ uint8_t temp_cal_table4; //!< temperature calibration table
+    /* 20 */ uint8_t temp_cal_table5; //!< temperature calibration table
+    /* 21 */ uint8_t temp_cal_table6; //!< temperature calibration table
+    /* 22 */ uint8_t timer_mode;      //!< bit0: timermode; =0 only one program, =1
+                                      //!< programs for weekdays
+                                      //                                                                            >1 manual mode, the higher bits contain the saved temperature << 1
 #if HR25
-  /*    */ uint8_t bat_half_thld; //!< treshold for half battery indicator [unit
-                                  //!< 0.02V]=[unit 0.01V per cell]
+    /*    */ uint8_t bat_half_thld; //!< treshold for half battery indicator [unit
+                                    //!< 0.02V]=[unit 0.01V per cell]
 #endif
-  /*    */ uint8_t bat_warning_thld; //!< treshold for battery warning [unit
-                                     //!< 0.02V]=[unit 0.01V per cell]
-  /*    */ uint8_t bat_low_thld;     //!< threshold for battery low [unit
-                                     //!< 0.02V]=[unit 0.01V per cell]
-  /*    */ uint8_t allow_ADC_during_motor;
+    /*    */ uint8_t bat_warning_thld; //!< treshold for battery warning [unit
+                                       //!< 0.02V]=[unit 0.01V per cell]
+    /*    */ uint8_t bat_low_thld;     //!< threshold for battery low [unit
+                                       //!< 0.02V]=[unit 0.01V per cell]
+    /*    */ uint8_t allow_ADC_during_motor;
 #if HW_WINDOW_DETECTION
-  /*    */ uint8_t window_open_detection_enable;
-  /*    */ uint8_t
-      window_open_detection_delay; //!< window open detection delay [sec]
-  /*    */ uint8_t
-      window_close_detection_delay; //!< window close detection delay [sec]
+    /*    */ uint8_t window_open_detection_enable;
+    /*    */ uint8_t
+        window_open_detection_delay; //!< window open detection delay [sec]
+    /*    */ uint8_t
+        window_close_detection_delay; //!< window close detection delay [sec]
 #else
-  /*    */ uint8_t window_open_detection_diff;  //!< threshold for window open
-                                                //!< detection unit is 0.1C
-  /*    */ uint8_t window_close_detection_diff; //!< threshold for window close
-                                                //!< detection unit is 0.1C
-  /*    */ uint8_t window_open_detection_time;
-  /*    */ uint8_t window_close_detection_time;
-  /*    */ uint8_t
-      window_open_timeout; //!< maximum time for window open state [minutes]
+    /*    */ uint8_t window_open_detection_diff;  //!< threshold for window open
+                                                  //!< detection unit is 0.1C
+    /*    */ uint8_t window_close_detection_diff; //!< threshold for window close
+                                                  //!< detection unit is 0.1C
+    /*    */ uint8_t window_open_detection_time;
+    /*    */ uint8_t window_close_detection_time;
+    /*    */ uint8_t
+        window_open_timeout; //!< maximum time for window open state [minutes]
 #endif
 #if BOOST_CONTROLER_AFTER_CHANGE
-  /*    */ uint8_t temp_boost_setpoint_diff;
-  /*    */ uint8_t temp_boost_hystereses;
-  /*    */ uint8_t temp_boost_error;
-  /*    */ uint8_t temp_boost_tempchange;
-  /*    */ uint8_t temp_boost_time_cool;
-  /*    */ uint8_t temp_boost_time_heat;
+    /*    */ uint8_t temp_boost_setpoint_diff;
+    /*    */ uint8_t temp_boost_hystereses;
+    /*    */ uint8_t temp_boost_error;
+    /*    */ uint8_t temp_boost_tempchange;
+    /*    */ uint8_t temp_boost_time_cool;
+    /*    */ uint8_t temp_boost_time_heat;
 #endif
 #if TEMP_COMPENSATE_OPTION
-  /*    */ int8_t room_temp_offset;
+    /*    */ int8_t room_temp_offset;
 #endif
 } config_t;
 
@@ -203,48 +203,48 @@ uint8_t EEPROM ee_config[][4] = {
     // order on this table depend to config_t
     //      /*idx */ {                 value,               default,      min,
     //      max},
-    /* 00 */ {14, 14, 0, 15},              //!< lcd_contrast  (unit 0.5stC)
-    /* 01 */ {10, 10, TEMP_MIN, TEMP_MAX}, //!< temperature 0  - frost
-                                           //!< protection (unit is 0.5stC)
-    /* 02 */ {34, 34, TEMP_MIN, TEMP_MAX}, //!< temperature 1  - energy save
-                                           //!< (unit is 0.5stC)
-    /* 03 */ {42, 42, TEMP_MIN, TEMP_MAX}, //!< temperature 2  - comfort (unit
-                                           //!< is 0.5stC)
-    /* 04 */ {48, 48, TEMP_MIN, TEMP_MAX}, //!< temperature 3  - supercomfort
-                                           //!< (unit is 0.5stC)
-    /* 05 */ {33, 33, 0, 255},             //!< P3_Factor;
-    /* 06 */ {8, 8, 0, 255},               //!< P_Factor;
-    /* 07 */ {32, 32, 0, 255},             //!< I_Factor;
-    /* 08 */ {40, 40, 0, 127},             //!< I_max_credit
-    /* 09 */ {30, 30, 0, 255}, //!< I_credit_expiration unit is PID_interval,
-                               //!< default 2 hour
+    /* 00 */ {14, 14, 0, 15},                 //!< lcd_contrast  (unit 0.5stC)
+    /* 01 */ {10, 10, TEMP_MIN, TEMP_MAX},    //!< temperature 0  - frost
+                                              //!< protection (unit is 0.5stC)
+    /* 02 */ {34, 34, TEMP_MIN, TEMP_MAX},    //!< temperature 1  - energy save
+                                              //!< (unit is 0.5stC)
+    /* 03 */ {42, 42, TEMP_MIN, TEMP_MAX},    //!< temperature 2  - comfort (unit
+                                              //!< is 0.5stC)
+    /* 04 */ {48, 48, TEMP_MIN, TEMP_MAX},    //!< temperature 3  - supercomfort
+                                              //!< (unit is 0.5stC)
+    /* 05 */ {33, 33, 0, 255},                //!< P3_Factor;
+    /* 06 */ {8, 8, 0, 255},                  //!< P_Factor;
+    /* 07 */ {32, 32, 0, 255},                //!< I_Factor;
+    /* 08 */ {40, 40, 0, 127},                //!< I_max_credit
+    /* 09 */ {30, 30, 0, 255},                //!< I_credit_expiration unit is PID_interval,
+                                              //!< default 2 hour
     /* 0a */ {240 / 5, 240 / 5, 20 / 5, 255}, //!< PID_interval*5 = interval in
                                               //!< seconds;  min=20sec,
                                               //!< max=21.25 minutes
     /* 0b */ {30, 30, 0, 100},                //!< valve_min
     /* 0c */ {45, 45, 0, 100},                //!< valve_center
     /* 0d */ {80, 80, 0, 100},                //!< valve_max
-    /* 0e */ {64, 64, 0, 127},  //!< valve_hysteresis; valve movement hysteresis
-                                //!< (unit is 1/128%), must be <128
-    /* 0f */ {32, 32, 32, 255}, //!< min motor_pwm PWM setting
-    /* 10 */ {250, 250, 50, 255},  //!< max motor_pwm PWM setting
-    /* 11 */ {100, 100, 1, 255},   //!< motor_eye_low
-    /* 12 */ {25, 25, 1, 255},     //!< motor_eye_high
-    /* 13 */ {78, 78, 5, 255},     //!< motor_close_eye_timeout; time from last
-                                   //!< pulse to disable eye [1/61sec]
-    /* 14 */ {130, 130, 110, 250}, //!< motor_end_detect_cal; stop timer
-                                   //!< threshold in % to previous average
-    /* 15 */ {150, 150, 110, 250}, //!< motor_end_detect_run; stop timer
-                                   //!< threshold in % to previous average
-    /* 16 */ {184, 184, 10, 255},  //!< motor_speed
-    /* 17 */ {50, 50, 10, 200},    //!< motor_speed_ctl_gain
-    /* 18 */ {10, 10, 1, 64},      //!< motor_pwm_max_step
-    /* 19 */ {255, 255, 0, 255},   //!< manual calibration L
-    /* 1a */ {255, 255, 0, 255},   //!< manual calibration H
+    /* 0e */ {64, 64, 0, 127},                //!< valve_hysteresis; valve movement hysteresis
+                                              //!< (unit is 1/128%), must be <128
+    /* 0f */ {32, 32, 32, 255},               //!< min motor_pwm PWM setting
+    /* 10 */ {250, 250, 50, 255},             //!< max motor_pwm PWM setting
+    /* 11 */ {100, 100, 1, 255},              //!< motor_eye_low
+    /* 12 */ {25, 25, 1, 255},                //!< motor_eye_high
+    /* 13 */ {78, 78, 5, 255},                //!< motor_close_eye_timeout; time from last
+                                              //!< pulse to disable eye [1/61sec]
+    /* 14 */ {130, 130, 110, 250},            //!< motor_end_detect_cal; stop timer
+                                              //!< threshold in % to previous average
+    /* 15 */ {150, 150, 110, 250},            //!< motor_end_detect_run; stop timer
+                                              //!< threshold in % to previous average
+    /* 16 */ {184, 184, 10, 255},             //!< motor_speed
+    /* 17 */ {50, 50, 10, 200},               //!< motor_speed_ctl_gain
+    /* 18 */ {10, 10, 1, 64},                 //!< motor_pwm_max_step
+    /* 19 */ {255, 255, 0, 255},              //!< manual calibration L
+    /* 1a */ {255, 255, 0, 255},              //!< manual calibration H
 
     /* 1b */
     {295 - TEMP_CAL_OFFSET, 295 - TEMP_CAL_OFFSET, 0,
-     255}, //!< value for 35C => 295 temperature calibration table
+     255},                                    //!< value for 35C => 295 temperature calibration table
     /* 1c */ {340 - 295, 340 - 295, 16, 255}, //!< value for 30C => 340
                                               //!< temperature calibration table
     /* 1d */ {397 - 340, 397 - 340, 16, 255}, //!< value for 25C => 397
@@ -280,10 +280,10 @@ uint8_t EEPROM ee_config[][4] = {
     /*    */ {5, 5, 0, 240}, //!< window_close_detection_delay [sec] max 4
                              //!< minutes
 #else
-    /*    */ {50, 50, 7, 255}, //!< window_open_detection_diff; reshold for
-                               //!< window open/close detection unit is 0.01C
-    /*    */ {50, 50, 7, 255}, //!< window_close_detection_diff; reshold for
-                               //!< window open/close detection unit is 0.01C
+    /*    */ {50, 50, 7, 255},           //!< window_open_detection_diff; reshold for
+                                         //!< window open/close detection unit is 0.01C
+    /*    */ {50, 50, 7, 255},           //!< window_close_detection_diff; reshold for
+                                         //!< window open/close detection unit is 0.01C
     /*    */ {8, 8, 1, AVGS_BUFFER_LEN}, //!< window_open_detection_time unit
                                          //!< 15sec = 1/4min
     /*    */ {8, 8, 1, AVGS_BUFFER_LEN}, //!< window_close_detection_time unit
@@ -319,8 +319,8 @@ void eeprom_config_save(uint8_t idx);
 uint16_t eeprom_timers_read_raw(uint8_t offset);
 #define timers_get_raw_index(dow, slot) (dow * RTC_TIMERS_PER_DOW + slot)
 void eeprom_timers_write_raw(uint8_t offset, uint16_t value);
-#define eeprom_timers_write(dow, slot, value)                                  \
-  (eeprom_timers_write_raw((dow * RTC_TIMERS_PER_DOW + slot), value))
+#define eeprom_timers_write(dow, slot, value) \
+    (eeprom_timers_write_raw((dow * RTC_TIMERS_PER_DOW + slot), value))
 
 extern uint8_t timers_patch_offset;
 extern uint16_t timers_patch_data;

@@ -45,8 +45,6 @@
 // HR20 Project includes
 #include "adc.h"
 #include "com.h"
-#include "rtc.h"
-#include "uart.h"
 #include "config.h"
 #include "controller.h"
 #include "debug.h"
@@ -56,7 +54,9 @@
 #include "main.h"
 #include "menu.h"
 #include "motor.h"
+#include "rtc.h"
 #include "task.h"
+#include "uart.h"
 
 // global Vars
 // volatile bool    m_automatic_mode;         // auto mode (false: manu mode)
@@ -89,172 +89,205 @@ int __attribute__((noreturn)) main(void)
 // __attribute__((noreturn)) mean that we not need prologue and epilogue for
 // main()
 {
-  //! initalization
-  init();
+    //! initalization
+    init();
 
-  task = 0;
-  display_task = 0;
+    task = 0;
+    display_task = 0;
 
-  //! Enable interrupts
-  sei();
+    //! Enable interrupts
+    sei();
 
-  /* check EEPROM layout */
-  if (EEPROM_read((uint16_t)&ee_layout) != EE_LAYOUT) {
-    LCD_PrintStringID(LCD_STRING_EEPr, LCD_MODE_ON);
-    task_lcd_update();
-    for (;;) {
-      ; // fatal error, stop startup
-    }
-  }
-  COM_init();
-
-  // We should do the following once here to have valid data from the start
-
-  /*!
-   ****************************************************************************
-   * main loop
-   ***************************************************************************/
-  for (;;) {
-    // go to sleep with ADC conversion start
-    asm volatile("cli");
-    if (!task && ((ASSR & (_BV(OCR2UB) | _BV(TCN2UB) | _BV(TCR2UB))) ==
-                  0) // ATmega169 datasheet chapter 17.8.1
-    ) {
-      // nothing to do, go to sleep
-      if (timer0_need_clock() || UART_need_clock()) {
-        SMCR = (0 << SM1) | (0 << SM0) | (1 << SE); // Idle mode
-      } else {
-        if (sleep_with_ADC) {
-          SMCR =
-              (0 << SM1) | (1 << SM0) | (1 << SE); // ADC noise reduction mode
-        } else {
-          SMCR = (1 << SM1) | (1 << SM0) | (1 << SE); // Power-save mode
+    /* check EEPROM layout */
+    if (EEPROM_read((uint16_t)&ee_layout) != EE_LAYOUT)
+    {
+        LCD_PrintStringID(LCD_STRING_EEPr, LCD_MODE_ON);
+        task_lcd_update();
+        for (;;)
+        {
+            ; // fatal error, stop startup
         }
-      }
-
-      if (sleep_with_ADC) {
-        sleep_with_ADC = false;
-        // start conversions
-        ADCSRA |= (1 << ADSC);
-      }
-
-      DEBUG_BEFORE_SLEEP();
-      asm volatile("sei"); //  sequence from ATMEL datasheet chapter 6.8.
-      asm volatile("sleep");
-      asm volatile("nop");
-      DEBUG_AFTER_SLEEP();
-      SMCR = (1 << SM1) | (1 << SM0) | (0 << SE); // Power-save mode
-    } else {
-      asm volatile("sei");
     }
+    COM_init();
 
-    // update LCD task
-    if (task & TASK_LCD) {
-      task &= ~TASK_LCD;
-      task_lcd_update();
-      continue; // on most case we have only 1 task, improve time to sleep
-    }
+    // We should do the following once here to have valid data from the start
 
-    if (task & TASK_ADC) {
-      task &= ~TASK_ADC;
-      if (!task_ADC()) {
-        // ADC is done
-      }
-      continue; // on most case we have only 1 task, improve time to sleep
-    }
-
-    // communication
-    if (task & TASK_COM) {
-      task &= ~TASK_COM;
-      COM_commad_parse();
-      continue; // on most case we have only 1 task, improve time to sleep
-    }
-
-    // motor stop
-    if (task & TASK_MOTOR_STOP) {
-      task &= ~TASK_MOTOR_STOP;
-      MOTOR_timer_stop();
-      continue; // on most case we have only 1 task, improve time to sleep
-    }
-
-    //! check keyboard and set keyboards events
-    if (task & TASK_KB) {
-      task &= ~TASK_KB;
-      task_keyboard();
-    }
-
-    if (task & TASK_RTC) {
-      task &= ~TASK_RTC;
-#if (HW_WINDOW_DETECTION)
-      PORTE |= _BV(PE2); // enable pull-up
-#endif
-      if (RTC_timer_done & _BV(RTC_TIMER_RTC)) {
-        RTC_AddOneSecond();
-      }
-      if (RTC_timer_done & (_BV(RTC_TIMER_OVF) | _BV(RTC_TIMER_RTC))) {
-        cli();
-        RTC_timer_done &= ~(_BV(RTC_TIMER_OVF) | _BV(RTC_TIMER_RTC));
-        sei();
-#if (DEBUG_PRINT_RTC_TICKS)
-        COM_putchar('*');
-        COM_flush();
-#endif
-        bool minute = (RTC_GetSecond() == 0);
-        CTL_update(minute);
-        if (minute) {
-          if (((CTL_error & (CTL_ERR_BATT_LOW | CTL_ERR_BATT_WARNING)) == 0) &&
-              (RTC_GetDayOfWeek() == 6) && (RTC_GetHour() == 10) &&
-              (RTC_GetMinute() == 0)) {
-            // every saturday 10:00AM
-            // TODO: improve this code!
-            // valve protection / CyCL
-            MOTOR_updateCalibration(0);
-          }
-#if (!HW_WINDOW_DETECTION)
-          if (CTL_mode_window != 0) {
-            CTL_mode_window--;
-            if (CTL_mode_window == 0) {
-              PID_force_update = 0;
+    /*!
+     ****************************************************************************
+     * main loop
+     ***************************************************************************/
+    for (;;)
+    {
+        // go to sleep with ADC conversion start
+        asm volatile("cli");
+        if (!task && ((ASSR & (_BV(OCR2UB) | _BV(TCN2UB) | _BV(TCR2UB))) ==
+                      0) // ATmega169 datasheet chapter 17.8.1
+        )
+        {
+            // nothing to do, go to sleep
+            if (timer0_need_clock() || UART_need_clock())
+            {
+                SMCR = (0 << SM1) | (0 << SM0) | (1 << SE); // Idle mode
             }
-          }
+            else
+            {
+                if (sleep_with_ADC)
+                {
+                    SMCR =
+                        (0 << SM1) | (1 << SM0) | (1 << SE); // ADC noise reduction mode
+                }
+                else
+                {
+                    SMCR = (1 << SM1) | (1 << SM0) | (1 << SE); // Power-save mode
+                }
+            }
+
+            if (sleep_with_ADC)
+            {
+                sleep_with_ADC = false;
+                // start conversions
+                ADCSRA |= (1 << ADSC);
+            }
+
+            DEBUG_BEFORE_SLEEP();
+            asm volatile("sei"); //  sequence from ATMEL datasheet chapter 6.8.
+            asm volatile("sleep");
+            asm volatile("nop");
+            DEBUG_AFTER_SLEEP();
+            SMCR = (1 << SM1) | (1 << SM0) | (0 << SE); // Power-save mode
+        }
+        else
+        {
+            asm volatile("sei");
+        }
+
+        // update LCD task
+        if (task & TASK_LCD)
+        {
+            task &= ~TASK_LCD;
+            task_lcd_update();
+            continue; // on most case we have only 1 task, improve time to sleep
+        }
+
+        if (task & TASK_ADC)
+        {
+            task &= ~TASK_ADC;
+            if (!task_ADC())
+            {
+                // ADC is done
+            }
+            continue; // on most case we have only 1 task, improve time to sleep
+        }
+
+        // communication
+        if (task & TASK_COM)
+        {
+            task &= ~TASK_COM;
+            COM_commad_parse();
+            continue; // on most case we have only 1 task, improve time to sleep
+        }
+
+        // motor stop
+        if (task & TASK_MOTOR_STOP)
+        {
+            task &= ~TASK_MOTOR_STOP;
+            MOTOR_timer_stop();
+            continue; // on most case we have only 1 task, improve time to sleep
+        }
+
+        //! check keyboard and set keyboards events
+        if (task & TASK_KB)
+        {
+            task &= ~TASK_KB;
+            task_keyboard();
+        }
+
+        if (task & TASK_RTC)
+        {
+            task &= ~TASK_RTC;
+#if (HW_WINDOW_DETECTION)
+            PORTE |= _BV(PE2); // enable pull-up
 #endif
+            if (RTC_timer_done & _BV(RTC_TIMER_RTC))
+            {
+                RTC_AddOneSecond();
+            }
+            if (RTC_timer_done & (_BV(RTC_TIMER_OVF) | _BV(RTC_TIMER_RTC)))
+            {
+                cli();
+                RTC_timer_done &= ~(_BV(RTC_TIMER_OVF) | _BV(RTC_TIMER_RTC));
+                sei();
+#if (DEBUG_PRINT_RTC_TICKS)
+                COM_putchar('*');
+                COM_flush();
+#endif
+                bool minute = (RTC_GetSecond() == 0);
+                CTL_update(minute);
+                if (minute)
+                {
+                    if (((CTL_error & (CTL_ERR_BATT_LOW | CTL_ERR_BATT_WARNING)) == 0) &&
+                        (RTC_GetDayOfWeek() == 6) && (RTC_GetHour() == 10) &&
+                        (RTC_GetMinute() == 0))
+                    {
+                        // every saturday 10:00AM
+                        // TODO: improve this code!
+                        // valve protection / CyCL
+                        MOTOR_updateCalibration(0);
+                    }
+#if (!HW_WINDOW_DETECTION)
+                    if (CTL_mode_window != 0)
+                    {
+                        CTL_mode_window--;
+                        if (CTL_mode_window == 0)
+                        {
+                            PID_force_update = 0;
+                        }
+                    }
+#endif
+                }
+                if (bat_average > 0)
+                {
+                    MOTOR_updateCalibration(mont_contact_pooling());
+                    MOTOR_Goto(valve_wanted);
+                }
+                task_keyboard_long_press_detect();
+                if ((MOTOR_Dir == stop) || (config.allow_ADC_during_motor))
+                {
+                    start_task_ADC();
+                }
+                if (menu_auto_update_timeout >= 0)
+                {
+                    menu_auto_update_timeout--;
+                }
+                display_task |= DISP_TASK_UPDATE;
+            }
+            // do not use continue here (menu_auto_update_timeout==0)
         }
-        if (bat_average > 0) {
-          MOTOR_updateCalibration(mont_contact_pooling());
-          MOTOR_Goto(valve_wanted);
-        }
-        task_keyboard_long_press_detect();
-        if ((MOTOR_Dir == stop) || (config.allow_ADC_during_motor)) {
-          start_task_ADC();
-        }
-        if (menu_auto_update_timeout >= 0) {
-          menu_auto_update_timeout--;
-        }
-        display_task |= DISP_TASK_UPDATE;
-      }
-      // do not use continue here (menu_auto_update_timeout==0)
-    }
 
-    // menu state machine
-    if (kb_events || (menu_auto_update_timeout == 0)) {
-      display_task |= DISP_TASK_UPDATE;
-      if (menu_controller()) {
-        display_task = DISP_TASK_CLEAR | DISP_TASK_UPDATE;
-      }
-    }
+        // menu state machine
+        if (kb_events || (menu_auto_update_timeout == 0))
+        {
+            display_task |= DISP_TASK_UPDATE;
+            if (menu_controller())
+            {
+                display_task = DISP_TASK_CLEAR | DISP_TASK_UPDATE;
+            }
+        }
 
-    // update motor PWM
-    if (task & TASK_MOTOR_PULSE) {
-      task &= ~TASK_MOTOR_PULSE;
-      MOTOR_updateCalibration(mont_contact_pooling());
-      MOTOR_timer_pulse();
-    }
+        // update motor PWM
+        if (task & TASK_MOTOR_PULSE)
+        {
+            task &= ~TASK_MOTOR_PULSE;
+            MOTOR_updateCalibration(mont_contact_pooling());
+            MOTOR_timer_pulse();
+        }
 
-    if (display_task) {
-      menu_view(display_task & DISP_TASK_CLEAR);
-      display_task = 0;
-    }
-  } // End Main loop
+        if (display_task)
+        {
+            menu_view(display_task & DISP_TASK_CLEAR);
+            display_task = 0;
+        }
+    } // End Main loop
 }
 
 // default fuses for ELF file
@@ -279,77 +312,79 @@ FUSES = {
  *******************************************************************************
  * Initialize all modules
  ******************************************************************************/
-static inline void init(void) {
+static inline void init(void)
+{
 #if (DISABLE_JTAG == 1)
-  {
-    // cli();
-    uint8_t t = MCUCR | _BV(JTD);
-    MCUCR = t;
-    MCUCR = t;
-  }
+    {
+        // cli();
+        uint8_t t = MCUCR | _BV(JTD);
+        MCUCR = t;
+        MCUCR = t;
+    }
 #endif
 
-  //! set Clock to 4 Mhz
-  CLKPR = (1 << CLKPCE); // prescaler change enable
-  CLKPR = (1 << CLKPS0); // prescaler = 2 (internal RC runs @ 8MHz)
+    //! set Clock to 4 Mhz
+    CLKPR = (1 << CLKPCE); // prescaler change enable
+    CLKPR = (1 << CLKPS0); // prescaler = 2 (internal RC runs @ 8MHz)
 
-  //! Calibrate the internal RC Oscillator
-  calibrate_rco();
+    //! Calibrate the internal RC Oscillator
+    calibrate_rco();
 
-  //! Disable Analog Comparator (power save)
-  ACSR = (1 << ACD);
+    //! Disable Analog Comparator (power save)
+    ACSR = (1 << ACD);
 
-  //! Disable Digital input on PF0-7 (power save)
-  DIDR0 = 0xFF;
+    //! Disable Digital input on PF0-7 (power save)
+    DIDR0 = 0xFF;
 
-  //! Power reduction mode
-  power_down_ADC();
+    //! Power reduction mode
+    power_down_ADC();
 
-  //! digital I/O port direction
-  DDRG = (1 << PG3) | (1 << PG4); // PG3, PG4 Motor out
+    //! digital I/O port direction
+    DDRG = (1 << PG3) | (1 << PG4); // PG3, PG4 Motor out
 
-  //! enable pullup on all inputs (keys and m_wheel)
-  //! ATTENTION: PB0 & PB6 is input, but we will select it only for read
+    //! enable pullup on all inputs (keys and m_wheel)
+    //! ATTENTION: PB0 & PB6 is input, but we will select it only for read
 
-  PORTB = (0 << PB0) | (1 << PB1) | (1 << PB2) | (1 << PB3) | (0 << PB6);
-  DDRB =
-      (1 << PB0) | (1 << PB4) | (1 << PB7) | (1 << PB6); // PB4, PB7 Motor out
+    PORTB = (0 << PB0) | (1 << PB1) | (1 << PB2) | (1 << PB3) | (0 << PB6);
+    DDRB =
+        (1 << PB0) | (1 << PB4) | (1 << PB7) | (1 << PB6); // PB4, PB7 Motor out
 
-  DDRE = (1 << PE3) | (1 << PE1);               // PE3  activate lighteye
-  PORTE = (1 << PE2) | (1 << PE1) | (1 << PE0); // PE2 | TXD | RXD(pullup);
-  DDRF = (1 << PF3);                            // PF3  activate tempsensor
-  PORTF = 0xf3;
+    DDRE = (1 << PE3) | (1 << PE1);               // PE3  activate lighteye
+    PORTE = (1 << PE2) | (1 << PE1) | (1 << PE0); // PE2 | TXD | RXD(pullup);
+    DDRF = (1 << PF3);                            // PF3  activate tempsensor
+    PORTF = 0xf3;
 
-  //! remark for PCMSK0:
-  //!     PCINT0 for lighteye (motor monitor) is activated in motor.c using
-  //!     mask register PCMSK0: PCMSK0=(1<<PCINT4) and PCMSK0&=~(1<<PCINT4)
+    //! remark for PCMSK0:
+    //!     PCINT0 for lighteye (motor monitor) is activated in motor.c using
+    //!     mask register PCMSK0: PCMSK0=(1<<PCINT4) and PCMSK0&=~(1<<PCINT4)
 
-  //! PCMSK1 for keyactions
-  PCMSK1 = (1 << PCINT9) | (1 << PCINT10) | (1 << PCINT11) | (1 << PCINT13);
+    //! PCMSK1 for keyactions
+    PCMSK1 = (1 << PCINT9) | (1 << PCINT10) | (1 << PCINT11) | (1 << PCINT13);
 
-  //! activate PCINT0 + PCINT1
-  EIMSK = (1 << PCIE1) | (1 << PCIE0);
+    //! activate PCINT0 + PCINT1
+    EIMSK = (1 << PCIE1) | (1 << PCIE0);
 
-  //! Initialize the RTC
-  RTC_Init();
+    //! Initialize the RTC
+    RTC_Init();
 
-  // press all keys on boot reload default eeprom values
-  eeprom_config_init((PINB & (KBI_PROG | KBI_C | KBI_AUTO)) == 0);
+    // press all keys on boot reload default eeprom values
+    eeprom_config_init((PINB & (KBI_PROG | KBI_C | KBI_AUTO)) == 0);
 
-  //! Initialize the motor
-  MOTOR_Init();
+    //! Initialize the motor
+    MOTOR_Init();
 
-  //! Initialize the LCD
-  LCD_Init();
+    //! Initialize the LCD
+    LCD_Init();
 
-  // init keyboard
-  state_wheel_prev = ~PINB & (KBI_ROT1 | KBI_ROT2);
+    // init keyboard
+    state_wheel_prev = ~PINB & (KBI_ROT1 | KBI_ROT2);
 
-  // restore saved temperature from config.timer
-  if (config.timer_mode > 1) {
-    CTL_temp_wanted = config.timer_mode >> 1;
-    CTL_mode_auto = false;
-  }
+    // restore saved temperature from config.timer
+    if (config.timer_mode > 1)
+    {
+        CTL_temp_wanted = config.timer_mode >> 1;
+        CTL_mode_auto = false;
+    }
 }
 
 // interrupts:
@@ -358,12 +393,13 @@ static inline void init(void) {
  *******************************************************************************
  * Pinchange Interupt INT0
  ******************************************************************************/
-ISR(PCINT0_vect) {
-  uint8_t pine = PINE;
+ISR(PCINT0_vect)
+{
+    uint8_t pine = PINE;
 
 #ifdef COM_UART
-  UART_interrupt(pine);
+    UART_interrupt(pine);
 #endif
 
-  MOTOR_interrupt(pine);
+    MOTOR_interrupt(pine);
 }

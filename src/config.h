@@ -68,9 +68,9 @@
 // our Version
 #define REVHIGH 1 //! Revision number high
 #define REVLOW 1  //! Revision number low
-#define VERSION_N                                                              \
-  (0x0000 + REVLOW +                                                           \
-   (REVHIGH << 8)) //! Version as HEX value F0.92 (E for Experimental)
+#define VERSION_N      \
+    (0x0000 + REVLOW + \
+     (REVHIGH << 8)) //! Version as HEX value F0.92 (E for Experimental)
 
 #ifndef REVISION
 #define REVISION "$Rev$"
@@ -88,7 +88,7 @@
 #define DEFAULT_TEMPERATURE 2000
 
 // Some default Values
-#define BOOT_DD 25  //!< Boot-Up date: day
+#define BOOT_DD 25 //!< Boot-Up date: day
 #define BOOT_MM 9  //!< Boot-Up date: month
 #define BOOT_YY 22 //!< Boot-Up date: year
 #define BOOT_hh 12 //!< Boot-Up time: hour
@@ -110,8 +110,8 @@
 // some handy macros
 
 #define ELEMCNT(A) (sizeof(A) / ELEMSIZE(A))
-#define OFFSETOF(TYPE, ELEM)                                                   \
-  ((size_t)((char *)&((TYPE *)0)->ELEM - (char *)((TYPE *)NULL)))
+#define OFFSETOF(TYPE, ELEM) \
+    ((size_t)((char *)&((TYPE *)0)->ELEM - (char *)((TYPE *)NULL)))
 #define CMP(X, Y) (((X) == (Y)) ? 0 : (((X) < (Y)) ? -1 : +1))
 #define LITERAL_STRLEN(S) (sizeof(S) - sizeof('\0'))
 #define ARRAY(TYPE, PTR, INDEX) ((TYPE *)(PTR))[INDEX]
@@ -121,8 +121,8 @@
 #define TOLOWER(C) ((C) | 0x20)
 #define TOUPPER(C) ((C) & ~0x20)
 #define CHRTOINT(C) ((C) - (char)('0'))
-#define CHRXTOINT(C)                                                           \
-  (IN_RANGE('0', (C), '9') ? ((C) - (char)('0')) : (TOLOWER(C) - 'a' + 0x0a))
+#define CHRXTOINT(C) \
+    (IN_RANGE('0', (C), '9') ? ((C) - (char)('0')) : (TOLOWER(C) - 'a' + 0x0a))
 
 #define HIBYTE(I16) ((I16) >> 8)
 #define LOBYTE(I16) ((I16)&0xff)
@@ -134,8 +134,8 @@
 
 #define VER_NAME "OpenHR20"
 
-#define VERSION_STRING                                                         \
-  ":" VER_NAME " " STR(REVHIGH) "." STR(REVLOW) " " __DATE__ " " __TIME__      \
-                                                " " REVISION
+#define VERSION_STRING                                                      \
+    ":" VER_NAME " " STR(REVHIGH) "." STR(REVLOW) " " __DATE__ " " __TIME__ \
+                                                  " " REVISION
 
 #endif /* CONFIG_H */

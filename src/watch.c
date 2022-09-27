@@ -69,19 +69,22 @@ static const uint16_t watch_map[WATCH_N] PROGMEM = {
 #endif
 };
 
-uint16_t watch(uint8_t addr) {
-  uint16_t p;
+uint16_t watch(uint8_t addr)
+{
+    uint16_t p;
 
-  if (addr >= WATCH_N) {
-    return WATCH_LAYOUT;
-  }
+    if (addr >= WATCH_N)
+    {
+        return WATCH_LAYOUT;
+    }
 
-  p = pgm_read_word(&watch_map[addr]);
-  if ((p & B_MASK) == B16) // 16 bit value
-  {
-    return *((uint16_t *)(p & ~B_MASK));
-  } else // 8 bit value
-  {
-    return (uint16_t)(*((uint8_t *)(p)));
-  }
+    p = pgm_read_word(&watch_map[addr]);
+    if ((p & B_MASK) == B16) // 16 bit value
+    {
+        return *((uint16_t *)(p & ~B_MASK));
+    }
+    else // 8 bit value
+    {
+        return (uint16_t)(*((uint8_t *)(p)));
+    }
 }

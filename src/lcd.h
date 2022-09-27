@@ -45,16 +45,16 @@
 #define LCD_MODE_ON 3      //!< (0b11) segment permanent on
 
 #define LCD_CONTRAST_INITIAL 14 //!< initial LCD contrast (0-15)
-#define LCD_BLINK_FRAMES                                                       \
-  12 //!< refreshes for each frame @ 48 frames/s; 12 refreshes -> 4Hz Blink
-     //!< frequency
+#define LCD_BLINK_FRAMES \
+    12                  //!< refreshes for each frame @ 48 frames/s; 12 refreshes -> 4Hz Blink
+                        //!< frequency
 #define LCD_BITPLANES 2 //!< \brief two bitplanes for blinking
 
 /*****************************************************************************
  *   Global Vars
  *****************************************************************************/
 extern volatile uint8_t
-    LCD_used_bitplanes; //!< \brief number of used bitplanes / used for power
+    LCD_used_bitplanes;          //!< \brief number of used bitplanes / used for power
 extern uint8_t LCD_force_update; //!< \brief force update LCD
 
 /*****************************************************************************
@@ -66,20 +66,20 @@ void LCD_AllSegments(uint8_t); // Set all segments to LCD_MODE
 
 void LCD_PrintDec(uint8_t, uint8_t, uint8_t); // Print DEC-val (0-99)
 void LCD_PrintDec3(uint16_t value, uint8_t pos,
-                   uint8_t mode);              // Print DEC-val (0-255)
-void LCD_PrintDecW(uint16_t, uint8_t);         // Print DEC-val (0-9999)
-void LCD_PrintHex(uint8_t, uint8_t, uint8_t);  // Print HEX-val (0-ff)
-void LCD_PrintHexW(uint16_t, uint8_t);         // Print HEX-val (0-ffff)
-void LCD_PrintChar(uint8_t, uint8_t, uint8_t); // Print one digit
-void LCD_PrintTemp(uint8_t, uint8_t);          // Print temperature (val+4,9)°C
-void LCD_PrintTempInt(int16_t, uint8_t);       // Print temperature (val/100)°C
-void LCD_PrintDayOfWeek(uint8_t, uint8_t);     // Print Day of Week (german)
+                   uint8_t mode);                 // Print DEC-val (0-255)
+void LCD_PrintDecW(uint16_t, uint8_t);            // Print DEC-val (0-9999)
+void LCD_PrintHex(uint8_t, uint8_t, uint8_t);     // Print HEX-val (0-ff)
+void LCD_PrintHexW(uint16_t, uint8_t);            // Print HEX-val (0-ffff)
+void LCD_PrintChar(uint8_t, uint8_t, uint8_t);    // Print one digit
+void LCD_PrintTemp(uint8_t, uint8_t);             // Print temperature (val+4,9)°C
+void LCD_PrintTempInt(int16_t, uint8_t);          // Print temperature (val/100)°C
+void LCD_PrintDayOfWeek(uint8_t, uint8_t);        // Print Day of Week (german)
 void LCD_PrintStringID(uint8_t id, uint8_t mode); // Print LCD string ID
 #define LCD_PrintDayOfWeek(dow, mode) (LCD_PrintStringID(dow, mode))
 
 void LCD_SetSeg(uint8_t, uint8_t); // Set one Segment (0-69)
 void LCD_SetSegReg(uint8_t, uint8_t,
-                   uint8_t); // Set multiple LCD Segment(s) with common register
+                   uint8_t);              // Set multiple LCD Segment(s) with common register
 void LCD_SetHourBarSeg(uint8_t, uint8_t); // Set HBS (0-23) (Hour-Bar-Segment)
 void LCD_HourBarBitmap(uint32_t bitmap);  // Set HBS like bitmap
 void task_lcd_update(void);
@@ -268,8 +268,8 @@ void task_lcd_update(void);
 #else /* HR20 */
 
 // LCD_SEG:_xx for LCD_SetSeg   // LCDDR | AtMega169 |  LCD_Data[]
-#define LCD_SEG_B0                                                             \
-  0                      //  0, 0 |  SEG000   |  [0], BIT 0
+#define LCD_SEG_B0 \
+    0                    //  0, 0 |  SEG000   |  [0], BIT 0
                          //  0, 1 |  SEG001   |  [0], BIT 1
 #define LCD_SEG_B1 2     //  0, 2 |  SEG002   |  [0], BIT 2
 #define LCD_SEG_B2 3     //  0, 3 |  SEG003   |  [0], BIT 3
@@ -292,8 +292,8 @@ void task_lcd_update(void);
 #define LCD_SEG_B22 20   //  2, 4 |  SEG020   |  [2], BIT 4
 #define LCD_SEG_B23 21   //  2, 5 |  SEG021   |  [2], BIT 5
 //*****************************************************************
-#define LCD_SEG_AUTO                                                           \
-  24                    //  5, 0 |  SEG100   |  [3], BIT 0
+#define LCD_SEG_AUTO \
+    24                  //  5, 0 |  SEG100   |  [3], BIT 0
                         //  5, 1 |  SEG101   |  [3], BIT 1
 #define LCD_SEG_PROG 26 //  5, 2 |  SEG102   |  [3], BIT 2
 #define LCD_SEG_3F 27   //  5, 3 |  SEG103   |  [3], BIT 3
@@ -335,8 +335,8 @@ void task_lcd_update(void);
 #define LCD_SEG_0E 64   // 12, 0 |  SEG216   |  [8], BIT 0
 #define LCD_SEG_0D 65   // 12, 1 |  SEG217   |  [8], BIT 1
 #define LCD_SEG_B12 66  // 12, 2 |  SEG218   |  [8], BIT 2
-#define LCD_SEG_0C                                                             \
-  67                    // 12, 3 |  SEG219   |  [8], BIT 3
+#define LCD_SEG_0C \
+    67                  // 12, 3 |  SEG219   |  [8], BIT 3
                         // 12, 4 |  SEG220   |  [8], BIT 4
 #define LCD_SEG_MOON 69 // 12, 5 |  SEG221   |  [8], BIT 5
 //*****************************************************************

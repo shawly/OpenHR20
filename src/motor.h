@@ -44,14 +44,17 @@
 
 // How is the H-Bridge connected to the AVR?
 
-static inline void MOTOR_H_BRIDGE_open(void) {
-  PORTG = (1 << PG4); // PG3 LOW, PG4 HIGH
+static inline void MOTOR_H_BRIDGE_open(void)
+{
+    PORTG = (1 << PG4); // PG3 LOW, PG4 HIGH
 }
-static inline void MOTOR_H_BRIDGE_close(void) {
-  PORTG = (1 << PG3); // PG3 HIGH, PG4 LOW
+static inline void MOTOR_H_BRIDGE_close(void)
+{
+    PORTG = (1 << PG3); // PG3 HIGH, PG4 LOW
 }
-static inline void MOTOR_H_BRIDGE_stop(void) {
-  PORTG = 0; // PG3 LOW, PG4 LOW
+static inline void MOTOR_H_BRIDGE_stop(void)
+{
+    PORTG = 0; // PG3 LOW, PG4 LOW
 }
 
 #define MOTOR_run_test() ((PORTG & ((1 << PG3) | (1 << PG4))) != 0)
@@ -76,17 +79,22 @@ static inline void MOTOR_H_BRIDGE_stop(void) {
  *   Typedefs
  *****************************************************************************/
 //! motor direction
-typedef enum { close = -1, stop = 0, open = 1 } motor_dir_t;
+typedef enum
+{
+    close = -1,
+    stop = 0,
+    open = 1
+} motor_dir_t;
 
 /*****************************************************************************
  *   Prototypes
  *****************************************************************************/
 #define MOTOR_Init(void) (MOTOR_updateCalibration(1)) // Init motor control
-void MOTOR_Goto(uint8_t); // Goto position in percent
-#define MOTOR_IsCalibrated()                                                   \
-  (MOTOR_calibration_step == 0) // is motor successful calibrated?
+void MOTOR_Goto(uint8_t);                             // Goto position in percent
+#define MOTOR_IsCalibrated() \
+    (MOTOR_calibration_step == 0)               // is motor successful calibrated?
 void MOTOR_updateCalibration(uint8_t cal_type); // reset the calibration
-uint8_t MOTOR_GetPosPercent(void); // get percental position of motor (0-100%)
+uint8_t MOTOR_GetPosPercent(void);              // get percental position of motor (0-100%)
 void MOTOR_timer_stop(void);
 void MOTOR_timer_pulse(void);
 void MOTOR_interrupt(uint8_t pine);
