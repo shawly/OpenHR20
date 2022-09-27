@@ -67,6 +67,53 @@ The externally accesible connector on HR20/25 thermostats allows direct connecti
 | Vcc         | RXD(PE0/02)              | TDO(PF6/55) | TMS(PF5/56) | /RST(PG5/20) |
 | GND         | TDI(PF7/54)              | TXD(PE1/03) | TCK(PF4/57) | (PE2/04)     |
 
+### Connection to JTAG
+
+| HR20 | JTAG  |
+| ---- | ----- |
+| Vcc  | Vcc   |
+| GND  | GND   |
+| RxD  | -     |
+| TDI  | TDI   |
+| TDO  | TDO   |
+| TxD  | -     |
+| TMS  | TMS   |
+| TCK  | TCK   |
+| /RST | NSRST |
+| PE2  | -     |
+
+I used an AVR-JTAG-USB programmer from Olimex. AVR-JTAG-J (from Olimex), AVR DRAGON or AVR JTAG ICE (MKI & MKII) will work as well.
+
 ### How to flash?
 
-TBD
+You can use the following commands to flash the firmware
+
+```bash
+# set your programmer:
+#   jtag1 = AVR JTAG ICE MKI
+#   jtag2 = AVR JTAG ICE MKII
+#   dragon_jtag = AVR DRAGON in JTAG mode
+#   or execute "avrdude -c ?" if you got another jtag programmer
+export PROGRAMMER=jtag1
+
+# the port of your programmer
+export PORT=/dev/ttyUSB0
+
+# the directory where backups will be stored (e.g. /your/current/directory/backups/2022-09-27_19:13:22)
+export BACKUP_DIR=$(pwd)/backups/$(date "+%F_%T")
+
+# backup fuse values
+avrdude -p m169p -c $PROGRAMMER -P $PORT -U lfuse:r:${BACKUP_DIR}/lfuse.hex:h -U hfuse:r:${BACKUP_DIR}/hfuse.hex:h -U efuse:r:${BACKUP_DIR}/efuse.hex:h
+
+# backup flash and eeprom (make sure to save these somewhere for the original firmware)
+avrdude -p m169p -c $PROGRAMMER -P $PORT -U flash:r:${BACKUP_DIR}/hr20.hex:i -U eeprom:r:${BACKUP_DIR}/hr20.eep:i
+
+# set fuses
+avrdude -p m169p -c $PROGRAMMER -P $PORT -U hfuse:w:0x9B:m -U lfuse:w:0xE2:m
+
+# change into the directory with the compiled firmware that you want to flash
+cd bin/HR20_uart_sww
+
+# write flash and eeprom
+avrdude -p m169p -c $PROGRAMMER -P $PORT -e -B 12 -U flash:w:hr20.hex -U eeprom:w:hr20.eep
+```
